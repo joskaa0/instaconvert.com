@@ -1,0 +1,1136 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head><base href="https://d16ilfvy4mv02r.cloudfront.net/workspaces/fnd0whu5wW17PBOZ0FBj6ARKcvg44umM/fb9e99c2-cb52-4b1a-9e11-f6dde719b844/files/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InstaConvert — Professional Unit Converter</title>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d2e;
+    --bg-card: #1e2235;
+    --bg-hover: #252a42;
+    --accent: #6c63ff;
+    --accent-hover: #5a52e0;
+    --accent-glow: rgba(108,99,255,0.25);
+    --text-primary: #f0f0f5;
+    --text-secondary: #9a9ab0;
+    --text-muted: #5a5a78;
+    --border: #2a2d45;
+    --border-hover: #6c63ff;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --sidebar-w: 260px;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow-card: 0 2px 16px rgba(0,0,0,0.3);
+    --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+  }
+  [data-theme="light"] {
+    --bg-primary: #f0f2f8;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-hover: #f4f5fb;
+    --accent: #6c63ff;
+    --accent-hover: #5a52e0;
+    --accent-glow: rgba(108,99,255,0.15);
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a4a6a;
+    --text-muted: #9a9ab0;
+    --border: #e0e2ef;
+    --border-hover: #6c63ff;
+    --shadow: 0 4px 24px rgba(108,99,255,0.08);
+    --shadow-card: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background var(--transition), color var(--transition);
+  }
+  /* ───── SIDEBAR ───── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    z-index: 100;
+    transition: transform var(--transition), background var(--transition);
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6c63ff, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+  .logo-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.5px; }
+  .sidebar-search {
+    padding: 14px 14px 8px;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    gap: 8px;
+    transition: border-color var(--transition);
+  }
+  .search-box:focus-within { border-color: var(--accent); }
+  .search-box input {
+    border: none; background: transparent; color: var(--text-primary);
+    font-size: 0.85rem; outline: none; width: 100%;
+  }
+  .search-box input::placeholder { color: var(--text-muted); }
+  .search-icon { color: var(--text-muted); font-size: 0.9rem; }
+  .sidebar-nav { padding: 8px 10px; flex: 1; }
+  .nav-section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 10px 10px 6px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.87rem;
+    color: var(--text-secondary);
+    transition: all var(--transition);
+    position: relative;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+  .nav-item.active {
+    background: var(--accent-glow);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 60%;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-item .nav-icon { font-size: 1.05rem; min-width: 22px; text-align: center; }
+  .nav-item .fav-star {
+    margin-left: auto; font-size: 0.8rem; color: var(--text-muted);
+    transition: color var(--transition);
+  }
+  .nav-item .fav-star.starred { color: var(--warning); }
+  /* ───── MAIN ───── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  /* ───── TOPBAR ───── */
+  #topbar {
+    display: flex; align-items: center;
+    padding: 16px 28px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 50;
+    gap: 12px;
+    transition: background var(--transition);
+  }
+  .topbar-title {
+    font-size: 1.1rem; font-weight: 700;
+    flex: 1;
+  }
+  .topbar-title span { color: var(--accent); }
+  .btn-icon {
+    width: 36px; height: 36px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    transition: all var(--transition);
+  }
+  .btn-icon:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  #menu-toggle { display: none; }
+  /* ───── CONTENT ───── */
+  #content {
+    padding: 28px;
+    flex: 1;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  /* ───── HOME ───── */
+  .home-hero {
+    text-align: center;
+    padding: 48px 0 36px;
+  }
+  .home-hero h1 {
+    font-size: 2.8rem; font-weight: 900;
+    background: linear-gradient(135deg, #6c63ff, #a78bfa, #60a5fa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+  .home-hero p { color: var(--text-secondary); font-size: 1.05rem; max-width: 520px; margin: 0 auto 28px; }
+  .hero-search {
+    max-width: 440px; margin: 0 auto;
+    display: flex; align-items: center;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 20px;
+    gap: 10px;
+    box-shadow: var(--shadow-card);
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+  .hero-search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); }
+  .hero-search input {
+    border: none; background: transparent; color: var(--text-primary);
+    font-size: 0.95rem; outline: none; width: 100%;
+  }
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .cat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .cat-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px var(--accent-glow);
+  }
+  .cat-card .cat-icon { font-size: 2.2rem; }
+  .cat-card .cat-name { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); }
+  .cat-card .cat-count { font-size: 0.75rem; color: var(--text-muted); }
+  /* ───── CONVERTER ───── */
+  .converter-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+  }
+  .converter-header .icon { font-size: 2rem; }
+  .converter-header h2 { font-size: 1.5rem; font-weight: 800; }
+  .converter-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+  .converter-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+    max-width: 680px;
+  }
+  .converter-row {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px;
+    align-items: end; margin-bottom: 18px;
+  }
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .field-input, .field-select {
+    background: var(--bg-secondary);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    width: 100%;
+  }
+  .field-input:focus, .field-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .field-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9ab0' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; }
+  .swap-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--accent);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    transition: all var(--transition);
+    margin-bottom: 2px;
+  }
+  .swap-btn:hover { background: var(--accent); color: white; border-color: var(--accent); transform: rotate(180deg); }
+  .result-box {
+    background: linear-gradient(135deg, var(--accent-glow), transparent);
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-top: 4px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .result-value {
+    font-size: 2rem; font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    word-break: break-all;
+  }
+  .result-unit { font-size: 0.9rem; color: var(--text-muted); margin-top: 2px; }
+  .result-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .action-btn {
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .action-btn.copy:hover { border-color: var(--success); color: var(--success); }
+  .action-btn.reset:hover { border-color: var(--error); color: var(--error); }
+  .error-msg { color: var(--error); font-size: 0.8rem; margin-top: 6px; min-height: 18px; }
+  .converter-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  /* ───── QUICK REFS ───── */
+  .quick-ref {
+    margin-top: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    max-width: 680px;
+  }
+  .quick-ref h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--text-secondary); }
+  .ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .ref-item {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .ref-item strong { color: var(--text-primary); }
+  /* ───── CURRENCY ───── */
+  .currency-region { margin-bottom: 8px; }
+  .currency-region-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--accent);
+    padding: 4px 0 2px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .optgroup-styled { display: block; }
+  /* ───── COPIED TOAST ───── */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--success);
+    color: #000;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem; font-weight: 600;
+    box-shadow: var(--shadow);
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  /* ───── RESPONSIVE ───── */
+  @media (max-width: 900px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    #menu-toggle { display: flex; }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; display: none; }
+    .overlay.show { display: block; }
+    .converter-row { grid-template-columns: 1fr; }
+    .swap-btn { transform: rotate(90deg); margin: 0 auto; }
+    .swap-btn:hover { transform: rotate(270deg); }
+  }
+  @media (max-width: 560px) {
+    #content { padding: 16px; }
+    .home-hero h1 { font-size: 2rem; }
+    .categories-grid { grid-template-columns: repeat(2, 1fr); }
+    .result-value { font-size: 1.5rem; }
+  }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  select option { background: #1e2235; color: #f0f0f5; }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">⚡ InstaConvert</div>
+    <div class="logo-sub">PROFESSIONAL UNIT CONVERTER</div>
+  </div>
+  <div class="sidebar-search">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="sidebarSearch" placeholder="Search categories…" oninput="filterNav(this.value)">
+    </div>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <div class="nav-section-title">Converters</div>
+    <!-- nav items injected by JS -->
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+  <!-- TOPBAR -->
+  <header id="topbar">
+    <button class="btn-icon" id="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-title">Insta<span>Convert</span></div>
+    <button class="btn-icon" id="themeToggle" title="Toggle theme" onclick="toggleTheme()">🌙</button>
+  </header>
+
+  <!-- CONTENT -->
+  <div id="content"></div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Copied to clipboard</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════
+const CATEGORIES = [
+  { id: 'length',   name: 'Length',        icon: '📏', desc: '11 units — mm to nautical mile' },
+  { id: 'weight',   name: 'Weight / Mass', icon: '⚖️', desc: '8 units — mg to stone' },
+  { id: 'volume',   name: 'Volume',        icon: '🧪', desc: '9 units — ml to gallon' },
+  { id: 'temp',     name: 'Temperature',   icon: '🌡️', desc: 'Celsius, Fahrenheit, Kelvin' },
+  { id: 'speed',    name: 'Speed',         icon: '🚀', desc: 'm/s to Mach' },
+  { id: 'area',     name: 'Area',          icon: '🗺️', desc: 'sq.m to acre' },
+  { id: 'time',     name: 'Time',          icon: '⏱️', desc: 'ms to years' },
+  { id: 'energy',   name: 'Energy',        icon: '⚡', desc: 'Joule to kWh' },
+  { id: 'power',    name: 'Power',         icon: '🔋', desc: 'Watt to Horsepower' },
+  { id: 'pressure', name: 'Pressure',      icon: '🌀', desc: 'Pa to PSI' },
+  { id: 'force',    name: 'Force',         icon: '💪', desc: 'Newton to lbf' },
+  { id: 'data',     name: 'Data Storage',  icon: '💾', desc: 'Bit to Petabyte' },
+  { id: 'fuel',     name: 'Fuel Consumption', icon: '⛽', desc: 'L/100km to MPG' },
+  { id: 'currency', name: 'Currency',      icon: '💱', desc: '40+ world currencies' },
+];
+
+// All conversions relative to base unit
+const UNITS = {
+  length: {
+    base: 'meter',
+    units: [
+      { id: 'nanometer',     label: 'Nanometer (nm)',      factor: 1e-9 },
+      { id: 'micrometer',    label: 'Micrometer (μm)',     factor: 1e-6 },
+      { id: 'millimeter',    label: 'Millimeter (mm)',     factor: 0.001 },
+      { id: 'centimeter',    label: 'Centimeter (cm)',     factor: 0.01 },
+      { id: 'meter',         label: 'Meter (m)',           factor: 1 },
+      { id: 'kilometer',     label: 'Kilometer (km)',      factor: 1000 },
+      { id: 'inch',          label: 'Inch (in)',           factor: 0.0254 },
+      { id: 'foot',          label: 'Foot (ft)',           factor: 0.3048 },
+      { id: 'yard',          label: 'Yard (yd)',           factor: 0.9144 },
+      { id: 'mile',          label: 'Mile (mi)',           factor: 1609.344 },
+      { id: 'nautical_mile', label: 'Nautical Mile (nmi)', factor: 1852 },
+      { id: 'light_year',    label: 'Light Year',         factor: 9.461e15 },
+      { id: 'astronomical',  label: 'Astronomical Unit (AU)', factor: 1.496e11 },
+    ]
+  },
+  weight: {
+    base: 'kilogram',
+    units: [
+      { id: 'microgram',   label: 'Microgram (μg)',      factor: 1e-9 },
+      { id: 'milligram',   label: 'Milligram (mg)',      factor: 1e-6 },
+      { id: 'gram',        label: 'Gram (g)',             factor: 0.001 },
+      { id: 'kilogram',    label: 'Kilogram (kg)',        factor: 1 },
+      { id: 'metric_ton',  label: 'Metric Ton (t)',      factor: 1000 },
+      { id: 'ounce',       label: 'Ounce (oz)',           factor: 0.0283495 },
+      { id: 'pound',       label: 'Pound (lb)',           factor: 0.453592 },
+      { id: 'stone',       label: 'Stone (st)',           factor: 6.35029 },
+      { id: 'carat',       label: 'Carat (ct)',           factor: 0.0002 },
+      { id: 'short_ton',   label: 'Short Ton (US)',      factor: 907.185 },
+      { id: 'long_ton',    label: 'Long Ton (UK)',        factor: 1016.05 },
+    ]
+  },
+  volume: {
+    base: 'liter',
+    units: [
+      { id: 'microliter',  label: 'Microliter (μl)',       factor: 1e-6 },
+      { id: 'milliliter',  label: 'Milliliter (ml)',        factor: 0.001 },
+      { id: 'centiliter',  label: 'Centiliter (cl)',        factor: 0.01 },
+      { id: 'deciliter',   label: 'Deciliter (dl)',         factor: 0.1 },
+      { id: 'liter',       label: 'Liter (l)',              factor: 1 },
+      { id: 'cubic_meter', label: 'Cubic Meter (m³)',       factor: 1000 },
+      { id: 'gallon_us',   label: 'Gallon (US)',            factor: 3.78541 },
+      { id: 'gallon_uk',   label: 'Gallon (UK/Imperial)',   factor: 4.54609 },
+      { id: 'quart_us',    label: 'Quart (US)',             factor: 0.946353 },
+      { id: 'pint_us',     label: 'Pint (US)',              factor: 0.473176 },
+      { id: 'pint_uk',     label: 'Pint (UK)',              factor: 0.568261 },
+      { id: 'cup',         label: 'Cup (US)',               factor: 0.236588 },
+      { id: 'fluid_oz',    label: 'Fluid Ounce (US)',       factor: 0.0295735 },
+      { id: 'tablespoon',  label: 'Tablespoon (US)',        factor: 0.0147868 },
+      { id: 'teaspoon',    label: 'Teaspoon (US)',          factor: 0.00492892 },
+      { id: 'cubic_inch',  label: 'Cubic Inch (in³)',       factor: 0.0163871 },
+      { id: 'cubic_foot',  label: 'Cubic Foot (ft³)',       factor: 28.3168 },
+    ]
+  },
+  temp: {
+    base: 'celsius',
+    special: true,
+    units: [
+      { id: 'celsius',    label: 'Celsius (°C)' },
+      { id: 'fahrenheit', label: 'Fahrenheit (°F)' },
+      { id: 'kelvin',     label: 'Kelvin (K)' },
+      { id: 'rankine',    label: 'Rankine (°R)' },
+    ]
+  },
+  speed: {
+    base: 'ms',
+    units: [
+      { id: 'ms',    label: 'Meter/second (m/s)',    factor: 1 },
+      { id: 'kmh',   label: 'Kilometer/hour (km/h)', factor: 0.277778 },
+      { id: 'mph',   label: 'Mile/hour (mph)',        factor: 0.44704 },
+      { id: 'knot',  label: 'Knot (kn)',              factor: 0.514444 },
+      { id: 'mach',  label: 'Mach (at sea level)',    factor: 340.29 },
+      { id: 'fts',   label: 'Foot/second (ft/s)',     factor: 0.3048 },
+      { id: 'cms',   label: 'Centimeter/second',      factor: 0.01 },
+      { id: 'light', label: 'Speed of Light (c)',     factor: 299792458 },
+    ]
+  },
+  area: {
+    base: 'sqm',
+    units: [
+      { id: 'sqmm',   label: 'Square Millimeter (mm²)', factor: 1e-6 },
+      { id: 'sqcm',   label: 'Square Centimeter (cm²)', factor: 1e-4 },
+      { id: 'sqm',    label: 'Square Meter (m²)',        factor: 1 },
+      { id: 'sqkm',   label: 'Square Kilometer (km²)',   factor: 1e6 },
+      { id: 'hectare',label: 'Hectare (ha)',              factor: 10000 },
+      { id: 'acre',   label: 'Acre',                     factor: 4046.86 },
+      { id: 'sqft',   label: 'Square Foot (ft²)',        factor: 0.092903 },
+      { id: 'sqyd',   label: 'Square Yard (yd²)',        factor: 0.836127 },
+      { id: 'sqin',   label: 'Square Inch (in²)',        factor: 0.000645 },
+      { id: 'sqmi',   label: 'Square Mile (mi²)',        factor: 2589988 },
+    ]
+  },
+  time: {
+    base: 'second',
+    units: [
+      { id: 'nanosecond',  label: 'Nanosecond (ns)',   factor: 1e-9 },
+      { id: 'microsecond', label: 'Microsecond (μs)',  factor: 1e-6 },
+      { id: 'millisecond', label: 'Millisecond (ms)',  factor: 0.001 },
+      { id: 'second',      label: 'Second (s)',         factor: 1 },
+      { id: 'minute',      label: 'Minute (min)',       factor: 60 },
+      { id: 'hour',        label: 'Hour (h)',           factor: 3600 },
+      { id: 'day',         label: 'Day',                factor: 86400 },
+      { id: 'week',        label: 'Week',               factor: 604800 },
+      { id: 'month',       label: 'Month (avg)',        factor: 2629800 },
+      { id: 'year',        label: 'Year (avg)',         factor: 31557600 },
+      { id: 'decade',      label: 'Decade',             factor: 315576000 },
+      { id: 'century',     label: 'Century',            factor: 3155760000 },
+    ]
+  },
+  energy: {
+    base: 'joule',
+    units: [
+      { id: 'joule',      label: 'Joule (J)',              factor: 1 },
+      { id: 'kilojoule',  label: 'Kilojoule (kJ)',         factor: 1000 },
+      { id: 'megajoule',  label: 'Megajoule (MJ)',         factor: 1e6 },
+      { id: 'calorie',    label: 'Calorie (cal)',           factor: 4.184 },
+      { id: 'kilocalorie',label: 'Kilocalorie (kcal)',      factor: 4184 },
+      { id: 'wh',         label: 'Watt-hour (Wh)',         factor: 3600 },
+      { id: 'kwh',        label: 'Kilowatt-hour (kWh)',    factor: 3600000 },
+      { id: 'mwh',        label: 'Megawatt-hour (MWh)',    factor: 3.6e9 },
+      { id: 'btu',        label: 'BTU',                    factor: 1055.06 },
+      { id: 'erg',        label: 'Erg',                    factor: 1e-7 },
+      { id: 'ev',         label: 'Electronvolt (eV)',      factor: 1.60218e-19 },
+      { id: 'ftlb',       label: 'Foot-pound (ft·lb)',     factor: 1.35582 },
+    ]
+  },
+  power: {
+    base: 'watt',
+    units: [
+      { id: 'milliwatt',  label: 'Milliwatt (mW)',         factor: 0.001 },
+      { id: 'watt',       label: 'Watt (W)',               factor: 1 },
+      { id: 'kilowatt',   label: 'Kilowatt (kW)',          factor: 1000 },
+      { id: 'megawatt',   label: 'Megawatt (MW)',          factor: 1e6 },
+      { id: 'gigawatt',   label: 'Gigawatt (GW)',          factor: 1e9 },
+      { id: 'hp_mech',    label: 'Horsepower (mechanical)', factor: 745.7 },
+      { id: 'hp_metric',  label: 'Horsepower (metric)',    factor: 735.499 },
+      { id: 'hp_elec',    label: 'Horsepower (electrical)',factor: 746 },
+      { id: 'btu_hr',     label: 'BTU/hour',               factor: 0.293071 },
+      { id: 'calps',      label: 'Calorie/second',         factor: 4.184 },
+    ]
+  },
+  pressure: {
+    base: 'pascal',
+    units: [
+      { id: 'pascal',     label: 'Pascal (Pa)',             factor: 1 },
+      { id: 'kilopascal', label: 'Kilopascal (kPa)',        factor: 1000 },
+      { id: 'megapascal', label: 'Megapascal (MPa)',        factor: 1e6 },
+      { id: 'bar',        label: 'Bar',                     factor: 100000 },
+      { id: 'millibar',   label: 'Millibar (mbar)',         factor: 100 },
+      { id: 'psi',        label: 'PSI (lb/in²)',            factor: 6894.76 },
+      { id: 'atm',        label: 'Atmosphere (atm)',        factor: 101325 },
+      { id: 'torr',       label: 'Torr (mmHg)',             factor: 133.322 },
+      { id: 'inhg',       label: 'Inch of Mercury (inHg)', factor: 3386.39 },
+      { id: 'mmhg',       label: 'Millimeter of Hg (mmHg)',factor: 133.322 },
+    ]
+  },
+  force: {
+    base: 'newton',
+    units: [
+      { id: 'newton',     label: 'Newton (N)',              factor: 1 },
+      { id: 'kilonewton', label: 'Kilonewton (kN)',         factor: 1000 },
+      { id: 'meganewton', label: 'Meganewton (MN)',         factor: 1e6 },
+      { id: 'dyne',       label: 'Dyne',                    factor: 1e-5 },
+      { id: 'lbf',        label: 'Pound-force (lbf)',       factor: 4.44822 },
+      { id: 'kgf',        label: 'Kilogram-force (kgf)',    factor: 9.80665 },
+      { id: 'ozf',        label: 'Ounce-force (ozf)',       factor: 0.278014 },
+      { id: 'tonf',       label: 'Ton-force (UK)',          factor: 9964.02 },
+    ]
+  },
+  data: {
+    base: 'byte',
+    units: [
+      { id: 'bit',       label: 'Bit (b)',                  factor: 0.125 },
+      { id: 'nibble',    label: 'Nibble',                   factor: 0.5 },
+      { id: 'byte',      label: 'Byte (B)',                 factor: 1 },
+      { id: 'kilobyte',  label: 'Kilobyte (KB)',            factor: 1024 },
+      { id: 'megabyte',  label: 'Megabyte (MB)',            factor: 1048576 },
+      { id: 'gigabyte',  label: 'Gigabyte (GB)',            factor: 1073741824 },
+      { id: 'terabyte',  label: 'Terabyte (TB)',            factor: 1099511627776 },
+      { id: 'petabyte',  label: 'Petabyte (PB)',            factor: 1.126e15 },
+      { id: 'kibibyte',  label: 'Kibibyte (KiB)',           factor: 1024 },
+      { id: 'mebibyte',  label: 'Mebibyte (MiB)',           factor: 1048576 },
+      { id: 'gibibyte',  label: 'Gibibyte (GiB)',           factor: 1073741824 },
+    ]
+  },
+  fuel: {
+    base: 'l100km',
+    special: true,
+    units: [
+      { id: 'l100km',  label: 'Liters per 100km (L/100km)' },
+      { id: 'kml',     label: 'Kilometers per Liter (km/L)' },
+      { id: 'mpg_us',  label: 'MPG (US)' },
+      { id: 'mpg_uk',  label: 'MPG (UK/Imperial)' },
+    ]
+  },
+  currency: {
+    base: 'USD',
+    special: true,
+    regions: {
+      'Americas': ['USD','CAD','MXN','BRL','ARS','CLP','COP','PEN'],
+      'Europe':   ['EUR','GBP','CHF','SEK','NOK','DKK','PLN','HUF','CZK','RON','MKD','HRK','RSD','BGN','TRY'],
+      'Asia':     ['JPY','CNY','INR','KRW','SGD','HKD','TWD','THB','MYR','IDR','PHP','VND','PKR','BDT'],
+      'Middle East': ['AED','SAR','QAR','KWD','BHD','OMR','ILS','JOD'],
+      'Africa':   ['ZAR','NGN','EGP','KES','GHS','TZS','UGX','ETB','MAD'],
+      'Oceania':  ['AUD','NZD','FJD','PGK'],
+    },
+    // Static rates vs USD (as of early 2025)
+    rates: {
+      USD:1, CAD:1.36, MXN:17.15, BRL:4.97, ARS:878, CLP:950, COP:3900, PEN:3.71,
+      EUR:0.92, GBP:0.79, CHF:0.90, SEK:10.5, NOK:10.6, DKK:6.87, PLN:3.97, HUF:357,
+      CZK:23.1, RON:4.57, MKD:56.8, HRK:6.93, RSD:108, BGN:1.80, TRY:32.2,
+      JPY:149.5, CNY:7.24, INR:83.1, KRW:1330, SGD:1.34, HKD:7.82, TWD:31.5,
+      THB:35.1, MYR:4.72, IDR:15750, PHP:56.2, VND:24400, PKR:278, BDT:110,
+      AED:3.67, SAR:3.75, QAR:3.64, KWD:0.308, BHD:0.376, OMR:0.385, ILS:3.72, JOD:0.709,
+      ZAR:18.6, NGN:1550, EGP:31.0, KES:129, GHS:14.5, TZS:2520, UGX:3760, ETB:56.5, MAD:10.0,
+      AUD:1.53, NZD:1.63, FJD:2.26, PGK:3.77,
+    },
+    labels: {
+      USD:'US Dollar',CAD:'Canadian Dollar',MXN:'Mexican Peso',BRL:'Brazilian Real',
+      ARS:'Argentine Peso',CLP:'Chilean Peso',COP:'Colombian Peso',PEN:'Peruvian Sol',
+      EUR:'Euro',GBP:'British Pound',CHF:'Swiss Franc',SEK:'Swedish Krona',
+      NOK:'Norwegian Krone',DKK:'Danish Krone',PLN:'Polish Zloty',HUF:'Hungarian Forint',
+      CZK:'Czech Koruna',RON:'Romanian Leu',MKD:'Macedonian Denar',HRK:'Croatian Kuna',
+      RSD:'Serbian Dinar',BGN:'Bulgarian Lev',TRY:'Turkish Lira',
+      JPY:'Japanese Yen',CNY:'Chinese Yuan',INR:'Indian Rupee',KRW:'South Korean Won',
+      SGD:'Singapore Dollar',HKD:'Hong Kong Dollar',TWD:'Taiwan Dollar',
+      THB:'Thai Baht',MYR:'Malaysian Ringgit',IDR:'Indonesian Rupiah',
+      PHP:'Philippine Peso',VND:'Vietnamese Dong',PKR:'Pakistani Rupee',BDT:'Bangladeshi Taka',
+      AED:'UAE Dirham',SAR:'Saudi Riyal',QAR:'Qatari Riyal',KWD:'Kuwaiti Dinar',
+      BHD:'Bahraini Dinar',OMR:'Omani Rial',ILS:'Israeli Shekel',JOD:'Jordanian Dinar',
+      ZAR:'South African Rand',NGN:'Nigerian Naira',EGP:'Egyptian Pound',KES:'Kenyan Shilling',
+      GHS:'Ghanaian Cedi',TZS:'Tanzanian Shilling',UGX:'Ugandan Shilling',ETB:'Ethiopian Birr',MAD:'Moroccan Dirham',
+      AUD:'Australian Dollar',NZD:'New Zealand Dollar',FJD:'Fijian Dollar',PGK:'Papua New Guinean Kina',
+    },
+    units: [] // generated
+  }
+};
+
+// Generate currency units list
+(function(){
+  const c = UNITS.currency;
+  Object.entries(c.regions).forEach(([region, codes]) => {
+    codes.forEach(code => {
+      c.units.push({ id: code, label: `${code} — ${c.labels[code]||code}`, region });
+    });
+  });
+})();
+
+// Quick reference data
+const QUICK_REFS = {
+  length: [
+    { from:'1 inch', to:'2.54 cm' }, { from:'1 foot', to:'30.48 cm' },
+    { from:'1 mile', to:'1.609 km' }, { from:'1 nautical mile', to:'1.852 km' },
+    { from:'1 yard', to:'0.9144 m' },
+  ],
+  weight: [
+    { from:'1 pound', to:'0.4536 kg' }, { from:'1 stone', to:'6.35 kg' },
+    { from:'1 oz', to:'28.35 g' }, { from:'1 metric ton', to:'1000 kg' },
+  ],
+  temp: [
+    { from:'0°C', to:'32°F / 273.15 K' }, { from:'100°C', to:'212°F / 373.15 K' },
+    { from:'37°C', to:'98.6°F (body temp)' },
+  ],
+  speed: [
+    { from:'1 Mach', to:'1235 km/h' }, { from:'1 knot', to:'1.852 km/h' },
+    { from:'100 km/h', to:'62.14 mph' },
+  ],
+};
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let currentCategory = 'home';
+let favorites = JSON.parse(localStorage.getItem('ic_favorites') || '[]');
+let lastUnits = JSON.parse(localStorage.getItem('ic_lastUnits') || '{}');
+let darkMode = localStorage.getItem('ic_theme') !== 'light';
+
+function setTheme(dark) {
+  darkMode = dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  document.getElementById('themeToggle').textContent = dark ? '🌙' : '☀️';
+  localStorage.setItem('ic_theme', dark ? 'dark' : 'light');
+}
+setTheme(darkMode);
+
+function toggleTheme() { setTheme(!darkMode); }
+
+// ═══════════════════════════════════════════════════════
+//  SIDEBAR
+// ═══════════════════════════════════════════════════════
+function buildSidebar() {
+  const nav = document.getElementById('sidebarNav');
+  nav.innerHTML = '<div class="nav-section-title">Converters</div>';
+  const homeItem = document.createElement('div');
+  homeItem.className = 'nav-item' + (currentCategory === 'home' ? ' active' : '');
+  homeItem.dataset.id = 'home';
+  homeItem.innerHTML = `<span class="nav-icon">🏠</span><span>Home</span>`;
+  homeItem.onclick = () => navigate('home');
+  nav.appendChild(homeItem);
+
+  CATEGORIES.forEach(cat => {
+    const item = document.createElement('div');
+    item.className = 'nav-item' + (currentCategory === cat.id ? ' active' : '');
+    item.dataset.id = cat.id;
+    const isFav = favorites.includes(cat.id);
+    item.innerHTML = `
+      <span class="nav-icon">${cat.icon}</span>
+      <span>${cat.name}</span>
+      <span class="fav-star ${isFav ? 'starred' : ''}" title="${isFav?'Remove from':'Add to'} favorites" onclick="toggleFav(event,'${cat.id}')">⭐</span>
+    `;
+    item.onclick = (e) => { if(!e.target.classList.contains('fav-star')) navigate(cat.id); };
+    nav.appendChild(item);
+  });
+}
+
+function filterNav(q) {
+  const items = document.querySelectorAll('.nav-item');
+  items.forEach(item => {
+    const id = item.dataset.id;
+    if (!id || id === 'home') { item.style.display = ''; return; }
+    const cat = CATEGORIES.find(c => c.id === id);
+    item.style.display = (cat && cat.name.toLowerCase().includes(q.toLowerCase())) ? '' : 'none';
+  });
+}
+
+function toggleFav(e, id) {
+  e.stopPropagation();
+  if (favorites.includes(id)) favorites = favorites.filter(f => f !== id);
+  else favorites.push(id);
+  localStorage.setItem('ic_favorites', JSON.stringify(favorites));
+  buildSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+function navigate(id) {
+  currentCategory = id;
+  buildSidebar();
+  closeSidebar();
+  const content = document.getElementById('content');
+  content.style.opacity = '0';
+  content.style.transform = 'translateY(12px)';
+  setTimeout(() => {
+    if (id === 'home') renderHome();
+    else renderConverter(id);
+    content.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+    content.style.opacity = '1';
+    content.style.transform = 'translateY(0)';
+  }, 60);
+}
+
+// ═══════════════════════════════════════════════════════
+//  HOME
+// ═══════════════════════════════════════════════════════
+function renderHome() {
+  let fav_html = '';
+  if (favorites.length) {
+    const favCats = CATEGORIES.filter(c => favorites.includes(c.id));
+    fav_html = `<div style="margin-bottom:12px">
+      <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;font-weight:600;letter-spacing:0.5px">⭐ FAVORITES</div>
+      <div class="categories-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">
+        ${favCats.map(c => `<div class="cat-card" onclick="navigate('${c.id}')">
+          <div class="cat-icon">${c.icon}</div>
+          <div class="cat-name">${c.name}</div>
+          <div class="cat-count">${c.desc}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('content').innerHTML = `
+    <div class="home-hero">
+      <h1>InstaConvert</h1>
+      <p>Professional unit converter & calculator — 14 categories, 100+ units, instant results</p>
+      <div class="hero-search">
+        <span>🔍</span>
+        <input type="text" placeholder="Search converters (e.g. length, currency, speed…)" id="heroSearch" oninput="heroSearchFn(this.value)">
+      </div>
+    </div>
+    ${fav_html}
+    <div id="homeGrid" class="categories-grid">
+      ${CATEGORIES.map(c => `
+        <div class="cat-card" onclick="navigate('${c.id}')">
+          <div class="cat-icon">${c.icon}</div>
+          <div class="cat-name">${c.name}</div>
+          <div class="cat-count">${c.desc}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function heroSearchFn(q) {
+  const grid = document.getElementById('homeGrid');
+  const filtered = CATEGORIES.filter(c =>
+    c.name.toLowerCase().includes(q.toLowerCase()) || c.desc.toLowerCase().includes(q.toLowerCase())
+  );
+  grid.innerHTML = filtered.map(c => `
+    <div class="cat-card" onclick="navigate('${c.id}')">
+      <div class="cat-icon">${c.icon}</div>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${c.desc}</div>
+    </div>
+  `).join('') || `<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:32px">No results found</p>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  CONVERTER RENDERER
+// ═══════════════════════════════════════════════════════
+function renderConverter(id) {
+  const cat = CATEGORIES.find(c => c.id === id);
+  const data = UNITS[id];
+  const saved = lastUnits[id] || {};
+
+  let fromDefault = saved.from || data.units[0].id;
+  let toDefault = saved.to || (data.units[1] ? data.units[1].id : data.units[0].id);
+
+  const content = document.getElementById('content');
+
+  // Build unit options
+  let fromOptions = '', toOptions = '';
+  if (id === 'currency') {
+    const regions = data.regions;
+    Object.entries(regions).forEach(([region, codes]) => {
+      fromOptions += `<optgroup label="— ${region} —">`;
+      toOptions   += `<optgroup label="— ${region} —">`;
+      codes.forEach(code => {
+        const lbl = `${code} — ${data.labels[code]||code}`;
+        fromOptions += `<option value="${code}" ${code===fromDefault?'selected':''}>${lbl}</option>`;
+        toOptions   += `<option value="${code}" ${code===toDefault?'selected':''}>${lbl}</option>`;
+      });
+      fromOptions += `</optgroup>`;
+      toOptions   += `</optgroup>`;
+    });
+  } else {
+    data.units.forEach(u => {
+      fromOptions += `<option value="${u.id}" ${u.id===fromDefault?'selected':''}>${u.label}</option>`;
+      toOptions   += `<option value="${u.id}" ${u.id===toDefault?'selected':''}>${u.label}</option>`;
+    });
+  }
+
+  const refs = QUICK_REFS[id];
+  const refsHtml = refs ? `
+    <div class="quick-ref">
+      <h3>📌 Quick Reference</h3>
+      <div class="ref-grid">
+        ${refs.map(r => `<div class="ref-item"><strong>${r.from}</strong> = ${r.to}</div>`).join('')}
+      </div>
+    </div>` : '';
+
+  content.innerHTML = `
+    <div class="converter-header">
+      <div class="icon">${cat.icon}</div>
+      <div>
+        <h2>${cat.name}</h2>
+        <p>${cat.desc}</p>
+      </div>
+    </div>
+    <div class="converter-card">
+      <div class="converter-row">
+        <div class="field-group">
+          <div class="field-label">From Unit</div>
+          <select class="field-select" id="fromUnit" onchange="doConvert('${id}')">
+            ${fromOptions}
+          </select>
+          <input type="number" class="field-input" id="fromVal" placeholder="Enter value…"
+            oninput="doConvert('${id}')" style="margin-top:8px" value="1">
+        </div>
+        <button class="swap-btn" onclick="swapUnits('${id}')" title="Swap units">⇄</button>
+        <div class="field-group">
+          <div class="field-label">To Unit</div>
+          <select class="field-select" id="toUnit" onchange="doConvert('${id}')">
+            ${toOptions}
+          </select>
+          <div style="margin-top:8px;min-height:44px"></div>
+        </div>
+      </div>
+      <div class="error-msg" id="errMsg"></div>
+      <div class="result-box" id="resultBox">
+        <div>
+          <div class="result-value" id="resultVal">—</div>
+          <div class="result-unit" id="resultUnit"></div>
+        </div>
+        <div class="result-actions">
+          <button class="action-btn copy" onclick="copyResult()" title="Copy result">📋 Copy</button>
+          <button class="action-btn reset" onclick="resetConverter('${id}')" title="Reset">❌ Reset</button>
+        </div>
+      </div>
+    </div>
+    ${refsHtml}
+  `;
+
+  doConvert(id);
+}
+
+// ═══════════════════════════════════════════════════════
+//  CONVERSION ENGINE
+// ═══════════════════════════════════════════════════════
+function doConvert(id) {
+  const data = UNITS[id];
+  const fromVal = parseFloat(document.getElementById('fromVal').value);
+  const fromUnit = document.getElementById('fromUnit').value;
+  const toUnit = document.getElementById('toUnit').value;
+  const errMsg = document.getElementById('errMsg');
+  const resultVal = document.getElementById('resultVal');
+  const resultUnit = document.getElementById('resultUnit');
+
+  // Save last used
+  lastUnits[id] = { from: fromUnit, to: toUnit };
+  localStorage.setItem('ic_lastUnits', JSON.stringify(lastUnits));
+
+  errMsg.textContent = '';
+  if (isNaN(fromVal)) {
+    resultVal.textContent = '—';
+    resultUnit.textContent = '';
+    return;
+  }
+
+  let result;
+  try {
+    if (id === 'temp') result = convertTemp(fromVal, fromUnit, toUnit);
+    else if (id === 'fuel') result = convertFuel(fromVal, fromUnit, toUnit);
+    else if (id === 'currency') result = convertCurrency(fromVal, fromUnit, toUnit);
+    else result = convertStandard(fromVal, fromUnit, toUnit, data);
+  } catch(e) {
+    errMsg.textContent = '⚠️ ' + e.message;
+    resultVal.textContent = '—';
+    return;
+  }
+
+  // Validate physical constraints
+  if (id === 'temp' && toUnit === 'kelvin' && result < 0) {
+    errMsg.textContent = '⚠️ Result is below absolute zero (0 K)';
+  }
+  if (fromVal < 0 && ['length','weight','volume','area','data','energy','power','pressure','force'].includes(id)) {
+    errMsg.textContent = '⚠️ Negative values may not be physically meaningful';
+  }
+
+  const formatted = formatResult(result);
+  resultVal.textContent = formatted;
+
+  // Get unit labels
+  const fromLabel = getUnitLabel(id, fromUnit);
+  const toLabel = getUnitLabel(id, toUnit);
+  resultUnit.textContent = `${fromVal} ${fromLabel} = ${formatted} ${toLabel}`;
+}
+
+function convertStandard(val, from, to, data) {
+  const fromUnit = data.units.find(u => u.id === from);
+  const toUnit = data.units.find(u => u.id === to);
+  if (!fromUnit || !toUnit) throw new Error('Unknown unit');
+  const inBase = val * fromUnit.factor;
+  return inBase / toUnit.factor;
+}
+
+function convertTemp(val, from, to) {
+  // Convert to Celsius first
+  let c;
+  if (from === 'celsius')    c = val;
+  else if (from === 'fahrenheit') c = (val - 32) * 5/9;
+  else if (from === 'kelvin')     c = val - 273.15;
+  else if (from === 'rankine')    c = (val - 491.67) * 5/9;
+  else throw new Error('Unknown temperature unit');
+
+  if (to === 'celsius')    return c;
+  if (to === 'fahrenheit') return c * 9/5 + 32;
+  if (to === 'kelvin')     return c + 273.15;
+  if (to === 'rankine')    return (c + 273.15) * 9/5;
+  throw new Error('Unknown temperature unit');
+}
+
+function convertFuel(val, from, to) {
+  if (from === to) return val;
+  // Convert to L/100km
+  let l100;
+  if (from === 'l100km')  l100 = val;
+  else if (from === 'kml')    l100 = 100 / val;
+  else if (from === 'mpg_us') l100 = 235.214 / val;
+  else if (from === 'mpg_uk') l100 = 282.481 / val;
+  else throw new Error('Unknown fuel unit');
+
+  if (to === 'l100km')  return l100;
+  if (to === 'kml')     return 100 / l100;
+  if (to === 'mpg_us')  return 235.214 / l100;
+  if (to === 'mpg_uk')  return 282.481 / l100;
+  throw new Error('Unknown fuel unit');
+}
+
+function convertCurrency(val, from, to) {
+  const rates = UNITS.currency.rates;
+  if (!rates[from] || !rates[to]) throw new Error('Unknown currency');
+  const inUSD = val / rates[from];
+  return inUSD * rates[to];
+}
+
+function getUnitLabel(id, unitId) {
+  if (id === 'currency') return unitId;
+  const u = UNITS[id].units.find(u => u.id === unitId);
+  return u ? u.label.replace(/\s*\(.*\)/, '') : unitId;
+}
+
+function formatResult(n) {
+  if (isNaN(n) || !isFinite(n)) return 'Error';
+  if (Math.abs(n) >= 1e15 || (Math.abs(n) < 1e-6 && n !== 0)) {
+    return n.toExponential(6);
+  }
+  if (Number.isInteger(n)) return n.toLocaleString();
+  const decimals = Math.abs(n) < 1 ? 8 : Math.abs(n) < 100 ? 6 : 4;
+  return parseFloat(n.toFixed(decimals)).toLocaleString('en-US', { maximumFractionDigits: decimals });
+}
+
+// ═══════════════════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════════════════
+function swapUnits(id) {
+  const fromSel = document.getElementById('fromUnit');
+  const toSel = document.getElementById('toUnit');
+  const tmp = fromSel.value;
+  fromSel.value = toSel.value;
+  toSel.value = tmp;
+  doConvert(id);
+}
+
+function resetConverter(id) {
+  document.getElementById('fromVal').value = '1';
+  doConvert(id);
+}
+
+function copyResult() {
+  const val = document.getElementById('resultVal').textContent;
+  if (val === '—') return;
+  navigator.clipboard.writeText(val).then(() => showToast('✓ Copied: ' + val));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+buildSidebar();
+renderHome();
+
+// Global search in sidebar
+document.getElementById('sidebarSearch').addEventListener('input', function() {
+  filterNav(this.value);
+});
+
+// Keyboard shortcut: / to focus search
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('sidebarSearch').focus();
+  }
+  if (e.key === 'Escape') closeSidebar();
+});
+</script>
+</body>
+</html>
+</invoke>
